@@ -1,14 +1,11 @@
-/* eslint-disable */
 <template>
   <div class="questionnaire-container">
     <div class="status-bar">
-      <span class="time">11:00</span>
-      <span class="title">初回アンケート</span>
-      <div class="battery">
-        <span class="battery-level">12%</span>
-      </div>
+      <span>アンケート</span>
+      <button @click="loadQuestions('initial')">初回アンケート</button>
+      <button @click="loadQuestions('membership')">会員情報アンケート</button>
+      <button @click="loadQuestions('withdrawal')">退会アンケート</button>
     </div>
-
     <div class="progress-container">
       <div class="progress-bar">
         <div class="progress" :style="{ width: progressPercentage + '%' }"></div>
@@ -73,7 +70,10 @@ export default {
   },
   computed: {
     progressPercentage() {
-      return ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
+      if (this.questions.length === 0) {
+        return 0;
+      }
+      return (this.currentQuestionIndex / this.questions.length) * 100;
     }
   },
   methods: {
@@ -108,13 +108,17 @@ export default {
 </script>
 
 <style scoped>
-.questionnaire-container {
-  max-width: 400px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 10px;
+html, body {
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.questionnaire-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  overflow: hidden;
 }
 
 .status-bar {
@@ -127,7 +131,9 @@ export default {
 }
 
 .main-content {
+  flex-grow: 1;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .header-image {
