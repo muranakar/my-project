@@ -19,7 +19,7 @@
     <transition name="fade" mode="out-in">
       <div class="main-content" :key="currentQuestionIndex">
         <div class="header-image">
-          <!-- アプリアイコンを表示する画像部分 -->
+          <!-- アプリアイコンを表示す画像部分aa -->
         </div>
 
         <div class="question-section">
