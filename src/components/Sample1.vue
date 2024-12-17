@@ -1,58 +1,63 @@
 <template>
   <div class="questionnaire-container">
-    <div class="status-bar">
-      <span>アンケート</span>
-      <button @click="loadQuestions('initial')">初回アンケート</button>
-      <button @click="loadQuestions('membership')">会員情報アンケート</button>
-      <button @click="loadQuestions('withdrawal')">退会アンケート</button>
-    </div>
-    <div class="progress-container">
-      <div class="progress-bar">
-        <div class="progress" :style="{ width: progressPercentage + '%' }"></div>
+    <div class="header-container">
+      <div class="status-bar">
+        <span>アンケート</span>
+        <button @click="loadQuestions('initial')">初回アンケート</button>
+        <button @click="loadQuestions('membership')">会員情報アンケート</button>
+        <button @click="loadQuestions('withdrawal')">退会アンケート</button>
       </div>
-      <span class="progress-percentage">{{ Math.round(progressPercentage) }}%</span>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress" :style="{ width: progressPercentage + '%' }"></div>
+        </div>
+        <span class="progress-percentage">{{ Math.round(progressPercentage) }}%</span>
+      </div>
     </div>
-
+    
     <transition name="fade" mode="out-in">
       <div class="main-content" :key="currentQuestionIndex">
         <div class="header-image">
           <!-- アプリアイコンを表示する画像部分 -->
         </div>
 
-        <div class="question-section">
-          <p class="question-text">
-            {{ questions[currentQuestionIndex].text }}
-          </p>
-          <p class="sub-text">
-            {{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' : questions[currentQuestionIndex].type.startsWith('max') ? `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}
-          </p>
-        </div>
+        <div class="content-wrapper"> <!-- 新しいdivを追加 -->
+          <div class="question-section fixed-header">
+            <p class="question-text">
+              {{ questions[currentQuestionIndex].text }}
+            </p>
+            <p class="sub-text">
+              （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' : questions[currentQuestionIndex].type.startsWith('max') ? `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
+            </p>
+          </div>
 
-        <div class="options-list">
-          <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
-            <input
-              type="checkbox"
-              v-if="questions[currentQuestionIndex].type === 'multiple' || questions[currentQuestionIndex].type.startsWith('max')"
-              :disabled="questions[currentQuestionIndex].type.startsWith('max') && selectedOptions.length >= parseInt(questions[currentQuestionIndex].type.slice(3)) && !selectedOptions.includes(option)"
-              v-model="selectedOptions"
-              :value="option"
-            >
-            <input
-              type="radio"
-              v-else
-              v-model="selectedOptions"
-              :value="option"
-            >
-            {{ option }}
-          </label>
-        </div>
-
-        <div class="navigation-buttons">
-          <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">戻る</button>
-          <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ' }}</button>
-        </div>
+          <div class="options-list">
+            <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
+              <input
+                type="checkbox"
+                v-if="questions[currentQuestionIndex].type === 'multiple' || questions[currentQuestionIndex].type.startsWith('max')"
+                :disabled="questions[currentQuestionIndex].type.startsWith('max') && selectedOptions.length >= parseInt(questions[currentQuestionIndex].type.slice(3)) && !selectedOptions.includes(option)"
+                v-model="selectedOptions"
+                :value="option"
+                class="custom-checkbox"
+              >
+              <input
+                type="radio"
+                v-else
+                v-model="selectedOptions"
+                :value="option"
+                class="custom-radio"
+              >
+              <span class="option-text">{{ option }}</span>
+            </label>
+          </div>
+        </div> <!-- 新しいdivを閉じる -->
       </div>
     </transition>
+    <div class="navigation-buttons">
+      <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">＜ 戻る</button>
+      <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ ＞' }}</button>
+    </div>
   </div>
 </template>
 
@@ -121,6 +126,13 @@ html, body {
   overflow: hidden;
 }
 
+.header-container {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
+
 .status-bar {
   background-color: #0066cc;
   color: white;
@@ -132,19 +144,24 @@ html, body {
 
 .main-content {
   flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .header-image {
   height: 150px;
   background-color: #0066cc;
-  margin: -20px -20px 20px -20px;
 }
 
-.question-text {
+.question-section {
   font-size: 16px;
   margin-bottom: 5px;
+}
+
+.fixed-header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
 }
 
 .highlight-text {
@@ -155,12 +172,14 @@ html, body {
   color: #666;
   font-size: 14px;
   margin-bottom: 20px;
+  text-align: right; /* Right aligned */
 }
 
 .options-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto; /* Allow scrolling for options */
 }
 
 .option-item {
@@ -172,14 +191,28 @@ html, body {
   cursor: pointer;
 }
 
+.option-item input {
+  margin-right: 10px; /* Add space between input and text */
+}
+
+.option-text {
+  flex-grow: 1;
+  text-align: center; /* Center aligned text */
+}
+
 .navigation-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: space-around;
+  background-color: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  bottom: 0;
+  width: 100%;
+  background-color: gray;  
 }
 
 .back-button, .next-button {
-  padding: 10px 20px;
+  padding: 10px 40px; /* Increased padding to make buttons wider */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -226,5 +259,20 @@ html, body {
 .progress-percentage {
   font-size: 14px;
   color: #666;
+}
+
+.question-text {
+  font-size: 20px; /* Increased font size */
+  margin-bottom: 5px;
+}
+
+.custom-checkbox, .custom-radio {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px; /* Add space between input and text */
+}
+
+.content-wrapper {
+  padding: 30px; /* 新しいスタイルを追加 */
 }
 </style>
