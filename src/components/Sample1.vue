@@ -66,6 +66,12 @@
       <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">＜ 戻る</button>
       <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ ＞' }}</button>
     </div>
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <p>回答をお願いいたします🙇</p>
+        <button @click="closeModal">閉じる</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -81,7 +87,8 @@ export default {
       selectedOptions: [],
       isSticky: false,
       headerOffset: 0,
-      headerHeight: 0
+      headerHeight: 0,
+      showModal: false
     }
   },
   computed: {
@@ -106,6 +113,10 @@ export default {
   },
   methods: {
     nextQuestion() {
+      if (this.selectedOptions.length === 0) {
+        this.showModal = true;
+        return;
+      }
       if (this.currentQuestionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
         this.selectedOptions = [];
@@ -134,6 +145,9 @@ export default {
     handleScroll() {
       // 現在のスクロール位置がヘッダーの元の位置を超えているかチェック
       this.isSticky = window.pageYOffset > this.headerOffset;
+    },
+    closeModal() {
+      this.showModal = false;
     }
   }
 }
@@ -319,4 +333,33 @@ html, body {
   padding-right: 30px;
 }
 
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.modal-content button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 </style>
