@@ -14,6 +14,11 @@
       >
         固定されるヘッダー
       </div>
+      <!-- プレースホルダー -->
+      <div 
+        v-if="isSticky" 
+        :style="{ height: `${headerHeight}px` }"
+      ></div>
   
       <!-- メインコンテンツ -->
       <div class="main-content">
@@ -53,12 +58,14 @@
     data() {
       return {
         isSticky: false,
-        headerOffset: 0
+        headerOffset: 0,
+        headerHeight: 0
       }
     },
     mounted() {
-      // ヘッダーの元の位置を保存
+      // ヘッダーの元の位置と高さを保存
       this.headerOffset = this.$refs.header.offsetTop;
+      this.headerHeight = this.$refs.header.offsetHeight;
       
       // スクロールイベントリスナーを追加
       window.addEventListener('scroll', this.handleScroll);

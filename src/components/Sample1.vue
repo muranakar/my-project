@@ -18,9 +18,7 @@
     <Transition name="fade" mode="out-in">
       <div class="main-content" :key="currentQuestionIndex">
         <div class="header-image">
-          <!-- アプリアイコンを表示する画像部分 -->
         </div>
-
         <div 
           class="question-section fixed-header"
           :class="{ 'is-sticky': isSticky }"
@@ -33,6 +31,11 @@
             （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' : questions[currentQuestionIndex].type.startsWith('max') ? `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
           </p>
         </div>
+             <!-- プレースホルダー -->
+      <div 
+        v-if="isSticky" 
+        :style="{ height: `${headerHeight}px` }"
+      ></div>
 
         <div class="content-wrapper"> <!-- 新しいdivを追加 -->
           <div class="options-list">
@@ -77,7 +80,8 @@ export default {
       questions: initialQuestions,
       selectedOptions: [],
       isSticky: false,
-      headerOffset: 0
+      headerOffset: 0,
+      headerHeight: 0
     }
   },
   computed: {
@@ -91,6 +95,7 @@ export default {
   mounted() {
     // ヘッダーの元の位置を保存
     this.headerOffset = this.$refs.header.offsetTop;
+    this.headerHeight = this.$refs.header.offsetHeight + 100;
     
     // スクロールイベントリスナーを追加
     window.addEventListener('scroll', this.handleScroll);
@@ -176,7 +181,6 @@ html, body {
 .question-section {
   font-size: 16px;
   padding-left: 20px;
-  padding-right: 20px;
   margin-bottom: 5px;
 }
 
