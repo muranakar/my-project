@@ -17,6 +17,9 @@ class LocalDatabase {
                 if (!this.db.objectStoreNames.contains('answers')) {
                     this.db.createObjectStore('answers', { keyPath: 'id', autoIncrement: true });
                 }
+                if (!this.db.objectStoreNames.contains('questionAnswers')) {
+                    this.db.createObjectStore('questionAnswers', { keyPath: 'id', autoIncrement: true });
+                }
             };
 
             request.onsuccess = (event) => {
@@ -68,6 +71,25 @@ class LocalDatabase {
         });
     }
 
+    async saveQuestionAnswers(questionAnswers) {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction(['questionAnswers'], 'readwrite');
+            const store = transaction.objectStore('questionAnswers');
+            store.clear();
+            questionAnswers.forEach((qa) => {
+                store.add(JSON.parse(JSON.stringify(qa)));
+            });
+
+            transaction.oncomplete = () => {
+                resolve();
+            };
+
+            transaction.onerror = (event) => {
+                reject(event.target.error);
+            };
+        });
+    }
+
     async getQuestions() {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(['questions'], 'readonly');
@@ -88,6 +110,22 @@ class LocalDatabase {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(['answers'], 'readonly');
             const store = transaction.objectStore('answers');
+            const request = store.getAll();
+
+            request.onsuccess = (event) => {
+                resolve(event.target.result);
+            };
+
+            request.onerror = (event) => {
+                reject(event.target.error);
+            };
+        });
+    }
+
+    async getQuestionAnswers() {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction(['questionAnswers'], 'readonly');
+            const store = transaction.objectStore('questionAnswers');
             const request = store.getAll();
 
             request.onsuccess = (event) => {

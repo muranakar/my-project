@@ -14,57 +14,43 @@
         <span class="progress-percentage">{{ Math.round(progressPercentage) }}%</span>
       </div>
     </div>
-    
+
     <Transition name="fade" mode="out-in">
       <div class="main-content" :key="currentQuestionIndex">
         <div class="header-image">
         </div>
-        <div 
-          class="question-section fixed-header"
-          :class="{ 'is-sticky': isSticky }"
-          ref="header"
-        >
+        <div class="question-section fixed-header" :class="{ 'is-sticky': isSticky }" ref="header">
           <p class="question-text">
             {{ questions[currentQuestionIndex].text }}
           </p>
           <p class="sub-text">
-            （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' : questions[currentQuestionIndex].type.startsWith('max') ? `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
+            （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' :
+              questions[currentQuestionIndex].type.startsWith('max') ?
+                `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
           </p>
         </div>
-             <!-- プレースホルダー -->
-      <div 
-        v-if="isSticky" 
-        :style="{ height: `${headerHeight}px` }"
-      ></div>
+        <!-- プレースホルダー -->
+        <div v-if="isSticky" :style="{ height: `${headerHeight}px` }"></div>
 
         <div class="content-wrapper"> <!-- 新しいdivを追加 -->
           <div class="options-list">
             <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
-              <input
-                type="checkbox"
+              <input type="checkbox"
                 v-if="questions[currentQuestionIndex].type === 'multiple' || questions[currentQuestionIndex].type.startsWith('max')"
                 :disabled="questions[currentQuestionIndex].type.startsWith('max') && selectedOptions.length >= parseInt(questions[currentQuestionIndex].type.slice(3)) && !selectedOptions.includes(option)"
-                v-model="selectedOptions"
-                :value="option"
-                class="custom-checkbox"
-              >
-              <input
-                type="radio"
-                v-else
-                v-model="selectedOptions"
-                :value="option"
-                class="custom-radio"
-              >
+                v-model="selectedOptions" :value="option" class="custom-checkbox">
+              <input type="radio" v-else v-model="selectedOptions" :value="option" class="custom-radio">
               <span class="option-text">{{ option }}</span>
             </label>
           </div>
           <div class="spacer"></div> <!-- 高さの空白を追加 -->
-        </div> 
+        </div>
       </div>
     </Transition>
     <div class="navigation-buttons fixed-footer">
       <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">＜ 戻る</button>
-      <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ ＞' }}</button>
+      <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ ＞'
+        }}</button>
     </div>
     <div v-if="showModal" class="modal">
       <div class="modal-content">
@@ -153,214 +139,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-html, body {
-  overflow: auto; /* 変更: overflow:scroll から overflow:auto へ */
-}
-
-.questionnaire-container {
-  width: 100%;
-  min-height: calc(100vh + 40px); /* 変更: ボタン分の高さを追加 */
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  overflow: visible; /* 変更: overflow: hidden から overflow: visible へ */
-}
-
-.header-container {
-  top: 0;
-  background-color: white;
-  z-index: 10;
-}
-
-.status-bar {
-  background-color: #0066cc;
-  color: white;
-  padding: 5px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.main-content {
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-.header-image {
-  height: 15vh;
-  background-color: #0066cc;
-}
-
-.question-section {
-  font-size: 16px;
-  padding-left: 20px;
-  margin-bottom: 5px;
-}
-
-.fixed-header {
-  position: sticky;
-  top: 0;
-  background-color: white;
-  z-index: 10;
-}
-
-.is-sticky {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-
-.highlight-text {
-  color: #ff0000;
-}
-
-.sub-text {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
-  text-align: right; /* Right aligned */
-}
-
-.options-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto; /* Allow scrolling for options */
-  /* max-height: calc(100vh - 60vh); 高さを調整 */
-}
-
-.option-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.option-item input {
-  margin-right: 10px; /* Add space between input and text */
-}
-
-.option-text {
-  flex-grow: 1;
-  text-align: center; /* Center aligned text */
-}
-
-.navigation-buttons {
-  display: flex;
-  justify-content: space-around;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  bottom: 0;
-  width: 100%;
-  background-color: gray;  
-  height: 40px; /* 高さの空白を追加 */
-}
-
-.fixed-footer {
-  position: fixed;
-  bottom: 0;
-  z-index: 10;
-}
-
-.back-button, .next-button {
-  padding: 10px 40px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.back-button {
-  background-color: #f0f0f0;
-  color: #666;
-}
-
-.next-button {
-  background-color: #0066cc;
-  color: white;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s; /* トランジション時間を1.5秒に変更 */
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
-  opacity: 0;
-}
-
-.progress-container {
-  display: flex;
-  align-items: center;
-  padding: 5px 30px;
-}
-
-.progress-bar {
-  flex-grow: 1;
-  height: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-right: 10px;
-}
-
-.progress {
-  height: 100%;
-  background-color: #0066cc;
-  transition: width 0.5s;
-}
-
-.progress-percentage {
-  font-size: 14px;
-  color: #666;
-}
-
-.question-text {
-  font-size: 20px; /* Increased font size */
-  margin-bottom: 5px;
-}
-
-.custom-checkbox, .custom-radio {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px; /* Add space between input and text */
-}
-
-.content-wrapper {
-  padding-left: 30px;
-  padding-right: 30px;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  text-align: center;
-}
-
-.modal-content button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-</style>

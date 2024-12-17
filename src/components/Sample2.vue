@@ -24,18 +24,15 @@
 
         <div class="options-list">
           <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
-            <input
-              type="checkbox"
-              v-model="selectedOptions"
-              :value="option"
-            >
+            <input type="checkbox" v-model="selectedOptions" :value="option">
             {{ option }}
           </label>
         </div>
 
         <div class="navigation-buttons">
           <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">戻る</button>
-          <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ' }}</button>
+          <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' :
+            '次へ' }}</button>
         </div>
       </div>
     </transition>
@@ -149,7 +146,8 @@ export default {
   margin-top: 20px;
 }
 
-.back-button, .next-button {
+.back-button,
+.next-button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -166,10 +164,16 @@ export default {
   color: white;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active in <2.1.8 */
+  {
   opacity: 0;
 }
 </style>
