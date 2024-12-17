@@ -29,10 +29,9 @@
                 `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
           </p>
         </div>
-        <!-- プレースホルダー -->
         <div v-if="isSticky" :style="{ height: `${headerHeight}px` }"></div>
 
-        <div class="content-wrapper"> <!-- 新しいdivを追加 -->
+        <div class="content-wrapper">
           <div class="options-list">
             <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
               <input type="checkbox"
@@ -43,7 +42,7 @@
               <span class="option-text">{{ option }}</span>
             </label>
           </div>
-          <div class="spacer"></div> <!-- 高さの空白を追加 -->
+          <div class="spacer"></div>
         </div>
       </div>
     </Transition>
@@ -94,7 +93,6 @@ export default {
     this.loadQuestions('initial');
   },
   beforeDestroy() {
-    // コンポーネント破棄時にイベントリスナーを削除
     window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
@@ -108,7 +106,7 @@ export default {
         this.currentQuestionIndex++;
         this.selectedOptions = [];
       } else {
-        this.$router.push({ name: 'Review' }); // 追加: 完了後にReview画面に遷移
+        this.$router.push({ name: 'Review' });
       }
     },
     prevQuestion() {
@@ -130,7 +128,6 @@ export default {
       await LocalDatabase.saveQuestions(this.questions);
     },
     handleScroll() {
-      // 現在のスクロール位置がヘッダーの元の位置を超えているかチェック
       this.isSticky = window.pageYOffset > this.headerOffset;
     },
     closeModal() {

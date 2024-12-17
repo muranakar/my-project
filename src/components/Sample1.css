@@ -207,3 +207,6 @@ html, body {
   border-radius: 5px;
   cursor: pointer;
 }
+.spacer {
+  height: 80px;
+}
