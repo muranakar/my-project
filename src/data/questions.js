@@ -2,7 +2,7 @@ const initialQuestions = [
     {
         text: 'ご来店いただくきっかけとなった広告を教えてください',
         type: 'multiple',
-        options: ['チラシ', 'DM', 'SNS', 'インターネット', '知人の紹介', '情報誌', '家／職場に近いから', '以前も通っていた']
+        options: ['チラシ', 'DM', 'SNS', 'インターネット', '知人の紹介', '情報誌', '家／職場に近いから', '以前も通っていた', 'sample', 'sample', 'sample', 'sample', 'sample', 'sample', 'sample', 'sample', 'sample', 'sample',]
     },
     {
         text: '当店をどのように知りましたか？',

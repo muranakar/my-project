@@ -51,10 +51,11 @@
               <span class="option-text">{{ option }}</span>
             </label>
           </div>
-        </div> <!-- 新しいdivを閉じる -->
+          <div class="spacer"></div> <!-- 高さの空白を追加 -->
+        </div> 
       </div>
     </transition>
-    <div class="navigation-buttons">
+    <div class="navigation-buttons fixed-footer">
       <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">＜ 戻る</button>
       <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ ＞' }}</button>
     </div>
@@ -114,20 +115,19 @@ export default {
 
 <style scoped>
 html, body {
-  overflow: hidden;
+  overflow: auto; /* 変更: overflow:scroll から overflow:auto へ */
 }
 
 .questionnaire-container {
   width: 100%;
-  height: 100vh;
+  min-height: calc(100vh + 40px); /* 変更: ボタン分の高さを追加 */
   display: flex;
   flex-direction: column;
   background-color: white;
-  overflow: hidden;
+  overflow: visible; /* 変更: overflow: hidden から overflow: visible へ */
 }
 
 .header-container {
-  position: sticky;
   top: 0;
   background-color: white;
   z-index: 10;
@@ -148,7 +148,7 @@ html, body {
 }
 
 .header-image {
-  height: 150px;
+  height: 15vh;
   background-color: #0066cc;
 }
 
@@ -180,6 +180,7 @@ html, body {
   flex-direction: column;
   gap: 10px;
   overflow-y: auto; /* Allow scrolling for options */
+  /* max-height: calc(100vh - 60vh); 高さを調整 */
 }
 
 .option-item {
@@ -203,16 +204,22 @@ html, body {
 .navigation-buttons {
   display: flex;
   justify-content: space-around;
-  background-color: white;
   padding-top: 10px;
   padding-bottom: 10px;
   bottom: 0;
   width: 100%;
   background-color: gray;  
+  height: 40px; /* 高さの空白を追加 */
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
 }
 
 .back-button, .next-button {
-  padding: 10px 40px; /* Increased padding to make buttons wider */
+  padding: 10px 40px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -238,7 +245,7 @@ html, body {
 .progress-container {
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  padding: 5px 30px;
 }
 
 .progress-bar {
@@ -273,6 +280,8 @@ html, body {
 }
 
 .content-wrapper {
-  padding: 30px; /* 新しいスタイルを追加 */
+  padding-left: 30px;
+  padding-right: 30px;
 }
+
 </style>
