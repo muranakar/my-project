@@ -77,6 +77,7 @@
 
 <script>
 import { initialQuestions, membershipQuestions, withdrawalQuestions } from '../data/questions';
+import LocalDatabase from '../data/LocalDatabase';
 
 export default {
   name: 'Sample1',
@@ -99,30 +100,29 @@ export default {
       return (this.currentQuestionIndex / this.questions.length) * 100;
     }
   },
-  mounted() {
-    // ヘッダーの元の位置を保存
+  async mounted() {
+    await LocalDatabase.init();
     this.headerOffset = this.$refs.header.offsetTop;
     this.headerHeight = this.$refs.header.offsetHeight + 100;
-    
-    // スクロールイベントリスナーを追加
     window.addEventListener('scroll', this.handleScroll);
+    this.loadQuestions('initial');
   },
   beforeDestroy() {
     // コンポーネント破棄時にイベントリスナーを削除
     window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
-    nextQuestion() {
+    async nextQuestion() {
       if (this.selectedOptions.length === 0) {
         this.showModal = true;
         return;
       }
+      await LocalDatabase.saveAnswers([{ questionIndex: this.currentQuestionIndex, answers: this.selectedOptions }]);
       if (this.currentQuestionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
         this.selectedOptions = [];
       } else {
-        // 完了処理
-        alert('アンケートが完了しました。ご協力ありがとうございました。');
+        this.$router.push({ name: 'Review' }); // 追加: 完了後にReview画面に遷移
       }
     },
     prevQuestion() {
@@ -131,7 +131,7 @@ export default {
         this.selectedOptions = [];
       }
     },
-    loadQuestions(type) {
+    async loadQuestions(type) {
       if (type === 'initial') {
         this.questions = initialQuestions;
       } else if (type === 'membership') {
@@ -141,6 +141,7 @@ export default {
       }
       this.currentQuestionIndex = 0;
       this.selectedOptions = [];
+      await LocalDatabase.saveQuestions(this.questions);
     },
     handleScroll() {
       // 現在のスクロール位置がヘッダーの元の位置を超えているかチェック
