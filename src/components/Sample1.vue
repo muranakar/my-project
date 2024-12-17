@@ -15,22 +15,26 @@
       </div>
     </div>
     
-    <transition name="fade" mode="out-in">
+    <Transition name="fade" mode="out-in">
       <div class="main-content" :key="currentQuestionIndex">
         <div class="header-image">
           <!-- アプリアイコンを表示する画像部分 -->
         </div>
 
-        <div class="content-wrapper"> <!-- 新しいdivを追加 -->
-          <div class="question-section fixed-header">
-            <p class="question-text">
-              {{ questions[currentQuestionIndex].text }}
-            </p>
-            <p class="sub-text">
-              （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' : questions[currentQuestionIndex].type.startsWith('max') ? `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
-            </p>
-          </div>
+        <div 
+          class="question-section fixed-header"
+          :class="{ 'is-sticky': isSticky }"
+          ref="header"
+        >
+          <p class="question-text">
+            {{ questions[currentQuestionIndex].text }}
+          </p>
+          <p class="sub-text">
+            （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' : questions[currentQuestionIndex].type.startsWith('max') ? `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
+          </p>
+        </div>
 
+        <div class="content-wrapper"> <!-- 新しいdivを追加 -->
           <div class="options-list">
             <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
               <input
@@ -54,7 +58,7 @@
           <div class="spacer"></div> <!-- 高さの空白を追加 -->
         </div> 
       </div>
-    </transition>
+    </Transition>
     <div class="navigation-buttons fixed-footer">
       <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">＜ 戻る</button>
       <button class="next-button" @click="nextQuestion">{{ currentQuestionIndex === questions.length - 1 ? '完了' : '次へ ＞' }}</button>
@@ -71,7 +75,9 @@ export default {
     return {
       currentQuestionIndex: 0,
       questions: initialQuestions,
-      selectedOptions: []
+      selectedOptions: [],
+      isSticky: false,
+      headerOffset: 0
     }
   },
   computed: {
@@ -81,6 +87,17 @@ export default {
       }
       return (this.currentQuestionIndex / this.questions.length) * 100;
     }
+  },
+  mounted() {
+    // ヘッダーの元の位置を保存
+    this.headerOffset = this.$refs.header.offsetTop;
+    
+    // スクロールイベントリスナーを追加
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeDestroy() {
+    // コンポーネント破棄時にイベントリスナーを削除
+    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     nextQuestion() {
@@ -108,6 +125,10 @@ export default {
       }
       this.currentQuestionIndex = 0;
       this.selectedOptions = [];
+    },
+    handleScroll() {
+      // 現在のスクロール位置がヘッダーの元の位置を超えているかチェック
+      this.isSticky = window.pageYOffset > this.headerOffset;
     }
   }
 }
@@ -154,6 +175,8 @@ html, body {
 
 .question-section {
   font-size: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
   margin-bottom: 5px;
 }
 
@@ -162,6 +185,14 @@ html, body {
   top: 0;
   background-color: white;
   z-index: 10;
+}
+
+.is-sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 .highlight-text {
@@ -236,7 +267,7 @@ html, body {
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.5s; /* トランジション時間を1.5秒に変更 */
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0;

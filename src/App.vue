@@ -1,15 +1,10 @@
 <template>
-    <Sample1 />
+    <router-view />
 </template>
 
 <script>
-import Sample1 from './components/Sample1.vue';
-
 export default {
   name: 'App',
-  components: {
-    Sample1
-  },
   data() {
     return {
       showNav: false
@@ -19,9 +14,6 @@ export default {
     navigate() {
       this.showNav = false;
     }
-  },
-  created() {
-    this.$router.push('/sample1');
   }
 }
 </script>

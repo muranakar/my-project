@@ -6,6 +6,7 @@ import Sample2 from '@/components/Sample2'
 import Sample3 from '@/components/Sample3'
 import Sample4 from '@/components/Sample4'
 
+
 const routes = [
   {
     path: '/',
@@ -36,7 +37,7 @@ const routes = [
     path: '/sample4',
     name: 'Sample4',
     component: Sample4
-  }
+  },
 ]
 
 const router = createRouter({
