@@ -25,15 +25,12 @@ export default {
     async created() {
         this.questions = await LocalDatabase.getQuestions();
         this.answers = await LocalDatabase.getAnswers();
-        console.log('this.answers', this.answers)
 
     },
     methods: {
         getAnswer(index) {
             const answer = this.answers.find(a => a.questionIndex === index);
-            console.log("answers", answer.answers)
-            console.log("haaaaaaaaaaaaaaa")
-            return answer.answers || '未回答';
+            return answer ? (Array.isArray(answer.answers) ? answer.answers.join(',') : answer.answers) : '未回答';
         },
         goBack() {
             this.$router.push({ name: 'Sample1' });
