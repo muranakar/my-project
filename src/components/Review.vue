@@ -4,7 +4,7 @@
         <div v-for="(question, index) in questions" :key="index"
             :class="['question-review', { 'alt-background': index % 2 === 0 }]">
             <p class="question-text">{{ question.text }}</p>
-            <p class="answer-text">回答: {{ getAnswer(index) }}</p>
+            <p class="answer-text">回答: {{ answerText[index] }}</p>
         </div>
         <button @click="goBack">戻る</button>
         <button @click="submitAnswers">送信</button>
@@ -19,19 +19,19 @@ export default {
     data() {
         return {
             questions: [],
-            answers: []
+            answers: [],
+            answerText: [] // 追加
         }
     },
     async created() {
         this.questions = await LocalDatabase.getQuestions();
         this.answers = await LocalDatabase.getAnswers();
-
+        console.log('answers', this.answers);
+        this.answerText = this.answers.map((answer, index) =>
+            answer ? (Array.isArray(answer.answers) ? answer.answers.join(',') : answer.answers) : '未回答'
+        );
     },
     methods: {
-        getAnswer(index) {
-            const answer = this.answers.find(a => a.questionIndex === index);
-            return answer ? (Array.isArray(answer.answers) ? answer.answers.join(',') : answer.answers) : '未回答';
-        },
         goBack() {
             this.$router.push({ name: 'Sample1' });
         },
