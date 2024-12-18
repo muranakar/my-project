@@ -47,7 +47,7 @@ const routes = [
   {
     path: '/thankyou',
     name: 'ThankYou',
-    component: ThankYou // 新しいルートを追加
+    component: ThankYou
   }
 ]
 

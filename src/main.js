@@ -1,14 +1,12 @@
-import { createApp } from 'vue' // 変更: Vue 3のcreateAppをインポート
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-// import store from './store' // 削除: storeのインポートを削除
-import './components/Sample1.css' // 追加: 新しいCSSファイルをインポート
+import './components/Sample1.css'
 
-const app = createApp(App) // 変更: createAppを使用してアプリケーションを作成
+const app = createApp(App)
 
 app.use(router)
-// app.use(store) // 削除: storeの参照を削除
-app.mount('#app') // 変更: アプリケーションをマウント
+app.mount('#app')
 
 module.exports = defineConfig({
     transpileDependencies: true,

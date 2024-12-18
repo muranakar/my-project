@@ -17,9 +17,6 @@ class LocalDatabase {
                 if (!this.db.objectStoreNames.contains('answers')) {
                     this.db.createObjectStore('answers', { keyPath: 'id', autoIncrement: true });
                 }
-                if (!this.db.objectStoreNames.contains('questionAnswers')) {
-                    this.db.createObjectStore('questionAnswers', { keyPath: 'id', autoIncrement: true });
-                }
             };
 
             request.onsuccess = (event) => {
@@ -43,10 +40,12 @@ class LocalDatabase {
             });
 
             transaction.oncomplete = () => {
+                console.log('Questions saved successfully:', JSON.stringify(questions, null, 2)); // 詳細なログ出力
                 resolve();
             };
 
             transaction.onerror = (event) => {
+                console.error('Error saving questions:', JSON.stringify(event.target.error, null, 2)); // 詳細なエラーログ
                 reject(event.target.error);
             };
         });
@@ -62,29 +61,12 @@ class LocalDatabase {
             });
 
             transaction.oncomplete = () => {
+                console.log('Answers saved successfully:', JSON.stringify(answers, null, 2)); // 詳細なログ出力
                 resolve();
             };
 
             transaction.onerror = (event) => {
-                reject(event.target.error);
-            };
-        });
-    }
-
-    async saveQuestionAnswers(questionAnswers) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['questionAnswers'], 'readwrite');
-            const store = transaction.objectStore('questionAnswers');
-            store.clear();
-            questionAnswers.forEach((qa) => {
-                store.add(JSON.parse(JSON.stringify(qa)));
-            });
-
-            transaction.oncomplete = () => {
-                resolve();
-            };
-
-            transaction.onerror = (event) => {
+                console.error('Error saving answers:', JSON.stringify(event.target.error, null, 2)); // 詳細なエラーログ
                 reject(event.target.error);
             };
         });
@@ -97,10 +79,12 @@ class LocalDatabase {
             const request = store.getAll();
 
             request.onsuccess = (event) => {
+                console.log('Retrieved questions:', JSON.stringify(event.target.result, null, 2)); // 詳細なログ出力
                 resolve(event.target.result);
             };
 
             request.onerror = (event) => {
+                console.error('Error retrieving questions:', JSON.stringify(event.target.error, null, 2)); // 詳細なエラーログ
                 reject(event.target.error);
             };
         });
@@ -113,26 +97,12 @@ class LocalDatabase {
             const request = store.getAll();
 
             request.onsuccess = (event) => {
+                console.log('Retrieved answers:', JSON.stringify(event.target.result, null, 2)); // 詳細なログ出力
                 resolve(event.target.result);
             };
 
             request.onerror = (event) => {
-                reject(event.target.error);
-            };
-        });
-    }
-
-    async getQuestionAnswers() {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['questionAnswers'], 'readonly');
-            const store = transaction.objectStore('questionAnswers');
-            const request = store.getAll();
-
-            request.onsuccess = (event) => {
-                resolve(event.target.result);
-            };
-
-            request.onerror = (event) => {
+                console.error('Error retrieving answers:', JSON.stringify(event.target.error, null, 2)); // 詳細なエラーログ
                 reject(event.target.error);
             };
         });
