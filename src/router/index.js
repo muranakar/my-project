@@ -5,7 +5,8 @@ import Sample1 from '@/components/Sample1'
 import Sample2 from '@/components/Sample2'
 import Sample3 from '@/components/Sample3'
 import Sample4 from '@/components/Sample4'
-
+import Review from '../components/Review.vue';
+import ThankYou from '../components/ThankYou.vue'; // 新しいコンポーネントをインポート
 
 const routes = [
   {
@@ -38,6 +39,16 @@ const routes = [
     name: 'Sample4',
     component: Sample4
   },
+  {
+    path: '/review',
+    name: 'Review',
+    component: Review
+  },
+  {
+    path: '/thankyou',
+    name: 'ThankYou',
+    component: ThankYou // 新しいルートを追加
+  }
 ]
 
 const router = createRouter({

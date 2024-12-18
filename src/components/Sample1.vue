@@ -74,7 +74,8 @@ export default {
       isSticky: false,
       headerOffset: 0,
       headerHeight: 0,
-      showModal: false
+      showModal: false,
+      allAnswers: []
     }
   },
   computed: {
@@ -101,11 +102,19 @@ export default {
         this.showModal = true;
         return;
       }
-      await LocalDatabase.saveAnswers([{ questionIndex: this.currentQuestionIndex, answers: this.selectedOptions }]);
+      const answer = {
+        questionIndex: this.currentQuestionIndex,
+        answers: Array.isArray(this.selectedOptions) && this.selectedOptions.length > 1
+          ? this.selectedOptions.join(', ')
+          : this.selectedOptions // 複数回答を一つの文字列に変換
+      };
+      this.allAnswers = this.allAnswers.filter(a => a.questionIndex !== this.currentQuestionIndex); // 既存の回答を削除
+      this.allAnswers.push(answer); // 新しい回答を追加
       if (this.currentQuestionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
         this.selectedOptions = [];
       } else {
+        await LocalDatabase.saveAnswers(this.allAnswers);
         this.$router.push({ name: 'Review' });
       }
     },
@@ -125,6 +134,7 @@ export default {
       }
       this.currentQuestionIndex = 0;
       this.selectedOptions = [];
+      this.allAnswers = [];
       await LocalDatabase.saveQuestions(this.questions);
     },
     handleScroll() {
