@@ -8,12 +8,10 @@
         </div>
         <button @click="goBack">戻る</button>
         <button @click="submitAnswers">送信</button>
-        <button @click="loglog">送信</button>
     </div>
 </template>
 
 <script>
-import LocalDatabase from '@/data/LocalDatabase';
 
 export default {
     name: 'Review',
@@ -21,14 +19,10 @@ export default {
         return {
             questions: [],
             answers: [],
-            answerText: [] // 追加
+            answerText: []
         }
     },
     async created() {
-        await LocalDatabase.init();
-        this.questions = await LocalDatabase.getQuestions();
-        this.answers = await LocalDatabase.getAnswers();
-        console.log('answers', this.answers);
         this.answerText = this.answers.map((answer, index) =>
             answer ? (Array.isArray(answer.answers) ? answer.answers.join(',') : answer.answers) : '未回答'
         );
@@ -40,12 +34,6 @@ export default {
         submitAnswers() {
             this.$router.push({ name: 'ThankYou' });
         },
-        async loglog() {
-
-            this.questions = await LocalDatabase.getQuestions();
-            this.answers = await LocalDatabase.getAnswers();
-            console.log('answersーーーーーーー', this.answers);
-        }
     }
 }
 </script>
@@ -54,12 +42,10 @@ export default {
 .review-container {
     padding: 10px;
     font-size: 12px;
-    /* 文字の大きさを小さく */
 }
 
 h1 {
     font-size: 16px;
-    /* h1の文字の大きさを小さく */
 }
 
 .question-review {
@@ -73,7 +59,6 @@ h1 {
 .question-text {
     font-weight: bold;
     font-size: 12px;
-    /* 文字の大きさを小さく */
 }
 
 .answer-text {
