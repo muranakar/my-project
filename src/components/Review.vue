@@ -8,11 +8,12 @@
         </div>
         <button @click="goBack">戻る</button>
         <button @click="submitAnswers">送信</button>
+        <button @click="loglog">送信</button>
     </div>
 </template>
 
 <script>
-import LocalDatabase from '../data/LocalDatabase';
+import LocalDatabase from '@/data/LocalDatabase';
 
 export default {
     name: 'Review',
@@ -24,6 +25,7 @@ export default {
         }
     },
     async created() {
+        await LocalDatabase.init();
         this.questions = await LocalDatabase.getQuestions();
         this.answers = await LocalDatabase.getAnswers();
         console.log('answers', this.answers);
@@ -37,6 +39,12 @@ export default {
         },
         submitAnswers() {
             this.$router.push({ name: 'ThankYou' });
+        },
+        async loglog() {
+
+            this.questions = await LocalDatabase.getQuestions();
+            this.answers = await LocalDatabase.getAnswers();
+            console.log('answersーーーーーーー', this.answers);
         }
     }
 }

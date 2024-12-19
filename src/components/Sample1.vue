@@ -16,35 +16,9 @@
     </div>
 
     <Transition name="fade" mode="out-in">
-      <div class="main-content" :key="currentQuestionIndex">
-        <div class="header-image">
-        </div>
-        <div class="question-section fixed-header" :class="{ 'is-sticky': isSticky }" ref="header">
-          <p class="question-text">
-            {{ questions[currentQuestionIndex].text }}
-          </p>
-          <p class="sub-text">
-            （{{ questions[currentQuestionIndex].type === 'multiple' ? '複数回答可' :
-              questions[currentQuestionIndex].type.startsWith('max') ?
-                `最大${questions[currentQuestionIndex].type.slice(3)}つ` : '単一回答' }}）
-          </p>
-        </div>
-        <div v-if="isSticky" :style="{ height: `${headerHeight}px` }"></div>
-
-        <div class="content-wrapper">
-          <div class="options-list">
-            <label v-for="(option, index) in questions[currentQuestionIndex].options" :key="index" class="option-item">
-              <input type="checkbox"
-                v-if="questions[currentQuestionIndex].type === 'multiple' || questions[currentQuestionIndex].type.startsWith('max')"
-                :disabled="questions[currentQuestionIndex].type.startsWith('max') && selectedOptions.length >= parseInt(questions[currentQuestionIndex].type.slice(3)) && !selectedOptions.includes(option)"
-                v-model="selectedOptions" :value="option" class="custom-checkbox">
-              <input type="radio" v-else v-model="selectedOptions" :value="option" class="custom-radio">
-              <span class="option-text">{{ option }}</span>
-            </label>
-          </div>
-          <div class="spacer"></div>
-        </div>
-      </div>
+      <QuestionComponent :question="questions[currentQuestionIndex]"
+        :selected-options="answers[currentQuestionIndex] || []" @update-options="updateOptions"
+        :key="currentQuestionIndex" />
     </Transition>
     <div class="navigation-buttons fixed-footer">
       <button class="back-button" @click="prevQuestion" :disabled="currentQuestionIndex === 0">＜ 戻る</button>
@@ -62,20 +36,22 @@
 
 <script>
 import { initialQuestions, membershipQuestions, withdrawalQuestions } from '../data/questions';
-import LocalDatabase from '../data/LocalDatabase';
+import QuestionComponent from './QuestionComponent.vue';
 
 export default {
   name: 'Sample1',
+  components: {
+    QuestionComponent
+  },
   data() {
     return {
       currentQuestionIndex: 0,
       questions: initialQuestions,
-      selectedOptions: [],
+      answers: {},
       isSticky: false,
       headerOffset: 0,
       headerHeight: 0,
-      showModal: false,
-      allAnswers: []
+      showModal: false
     }
   },
   computed: {
@@ -88,7 +64,7 @@ export default {
   },
   async mounted() {
     await LocalDatabase.init();
-    this.headerOffset = this.$refs.header.offsetTop;
+    this.headerOffset = this.$refs.header?.offsetTop;
     this.headerHeight = this.$refs.header.offsetHeight + 100;
     window.addEventListener('scroll', this.handleScroll);
     this.loadQuestions('initial');
@@ -98,30 +74,20 @@ export default {
   },
   methods: {
     async nextQuestion() {
-      if (this.selectedOptions.length === 0) {
+      if (!this.answers[this.currentQuestionIndex] || this.answers[this.currentQuestionIndex].length === 0) {
         this.showModal = true;
         return;
       }
-      const answer = {
-        questionIndex: this.currentQuestionIndex,
-        answers: Array.isArray(this.selectedOptions) && this.selectedOptions.length > 1
-          ? this.selectedOptions.join(', ')
-          : this.selectedOptions // 複数回答を一つの文字列に変換
-      };
-      this.allAnswers = this.allAnswers.filter(a => a.questionIndex !== this.currentQuestionIndex); // 既存の回答を削除
-      this.allAnswers.push(answer); // 新しい回答を追加
       if (this.currentQuestionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
-        this.selectedOptions = [];
       } else {
-        await LocalDatabase.saveAnswers(this.allAnswers);
+        await LocalDatabase.saveAnswers(this.answers);
         this.$router.push({ name: 'Review' });
       }
     },
     prevQuestion() {
       if (this.currentQuestionIndex > 0) {
         this.currentQuestionIndex--;
-        this.selectedOptions = [];
       }
     },
     async loadQuestions(type) {
@@ -133,8 +99,7 @@ export default {
         this.questions = withdrawalQuestions;
       }
       this.currentQuestionIndex = 0;
-      this.selectedOptions = [];
-      this.allAnswers = [];
+      this.answers = {};
       await LocalDatabase.saveQuestions(this.questions);
     },
     handleScroll() {
@@ -142,6 +107,9 @@ export default {
     },
     closeModal() {
       this.showModal = false;
+    },
+    updateOptions(options) {
+      this.answers = { ...this.answers, [this.currentQuestionIndex]: options };
     }
   }
 }
